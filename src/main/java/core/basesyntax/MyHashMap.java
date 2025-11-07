@@ -66,6 +66,19 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
         return size;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MyHashMap<?, ?> other = (MyHashMap<?, ?>) o;
+        return this.size == other.size;
+    }
+
     private int hash(K key) {
         int hash = (key == null) ? 0 : (key.hashCode() & 0x7fffffff) % table.length;
         return hash;
@@ -98,18 +111,5 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
             this.value = value;
             this.next = next;
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        MyHashMap<?, ?> other = (MyHashMap<?, ?>) o;
-        return this.size == other.size;
     }
 }
