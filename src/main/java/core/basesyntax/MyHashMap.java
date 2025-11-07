@@ -14,52 +14,6 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
         threshold = (int) (DEFAULT_CAPACITY * LOAD_FACTOR);
     }
 
-    @SuppressWarnings("unchecked")
-    private void resize() {
-        Node<K, V>[] oldTable = table;
-        table = (Node<K, V>[]) new Node[oldTable.length * 2];
-        threshold = (int) (table.length * LOAD_FACTOR);
-        for (Node<K, V> node : oldTable) {
-            while (node != null) {
-                int newIndex = (node.key == null)
-                        ? 0 : Math.abs(node.key.hashCode()) % table.length;
-                Node<K, V> nextNode = node.next;
-                node.next = table[newIndex];
-                table[newIndex] = node;
-                node = nextNode;
-            }
-        }
-    }
-
-    public class Node<K, V> {
-        private K key;
-        private V value;
-        private Node<K, V> next;
-
-        Node(K key, V value, Node<K, V> next) {
-            this.key = key;
-            this.value = value;
-            this.next = next;
-        }
-    }
-
-    public int hash(K key) {
-        int hash = (key == null) ? 0 : Math.abs(key.hashCode()) % table.length;
-        return hash;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        MyHashMap<?, ?> other = (MyHashMap<?, ?>) o;
-        return this.size == other.size;
-    }
-
     @Override
     public void put(K key, V value) {
         int index = (key == null) ? 0 : hash(key);
@@ -110,5 +64,52 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
     @Override
     public int getSize() {
         return size;
+    }
+
+    private int hash(K key) {
+        int hash = (key == null) ? 0 : (key.hashCode() & 0x7fffffff) % table.length;
+        return hash;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        Node<K, V>[] oldTable = table;
+        table = (Node<K, V>[]) new Node[oldTable.length * 2];
+        threshold = (int) (table.length * LOAD_FACTOR);
+        for (Node<K, V> node : oldTable) {
+            while (node != null) {
+                int newIndex = (node.key == null)
+                        ? 0 : (node.key.hashCode() & 0x7fffffff) % table.length;
+                Node<K, V> nextNode = node.next;
+                node.next = table[newIndex];
+                table[newIndex] = node;
+                node = nextNode;
+            }
+        }
+    }
+
+    private static class Node<K, V> {
+        private K key;
+        private V value;
+        private Node<K, V> next;
+
+        Node(K key, V value, Node<K, V> next) {
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MyHashMap<?, ?> other = (MyHashMap<?, ?>) o;
+        return this.size == other.size;
     }
 }
